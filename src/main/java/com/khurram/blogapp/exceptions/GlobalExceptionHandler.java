@@ -17,9 +17,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<Object> handlePostNotFound(PostNotFoundException ex){
 		Map<String, Object> errorDetails = new HashMap<>();
 		
-		errorDetails.put("TimeStamp: ", LocalDateTime.now());
-		errorDetails.put("Message: ", ex.getMessage());
-		errorDetails.put("Status: ", HttpStatus.NOT_FOUND.value());
+		errorDetails.put("TimeStamp ", LocalDateTime.now());
+		errorDetails.put("Message ", ex.getMessage());
+		errorDetails.put("Status ", HttpStatus.NOT_FOUND.value());
 		
 		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
 		

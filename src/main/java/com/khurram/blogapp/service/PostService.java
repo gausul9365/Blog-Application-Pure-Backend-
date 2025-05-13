@@ -2,13 +2,15 @@ package com.khurram.blogapp.service;
 
 
 import com.khurram.blogapp.payload.PostDto;
+import com.khurram.blogapp.payload.PostResponse;
 
 import java.util.List;
 
 
 public interface PostService {
 		
-		List<PostDto> getAllPosts();
+		PostResponse getAllPosts(int pageNumber, int pageSize);
+
 		
 		PostDto getPostById(int id);
 		

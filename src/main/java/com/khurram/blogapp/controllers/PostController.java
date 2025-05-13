@@ -1,11 +1,13 @@
 package com.khurram.blogapp.controllers;
 
 import com.khurram.blogapp.payload.PostDto;
+import com.khurram.blogapp.payload.PostResponse;
+
+import jakarta.validation.Valid;
+	
 import com.khurram.blogapp.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -15,9 +17,13 @@ public class PostController {
     private PostService postService;
 
     @GetMapping
-    public List<PostDto> getAllPosts() {
-        return postService.getAllPosts();
+    public PostResponse getAllPosts(
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "5", required = false) int size) {
+        return postService.getAllPosts(page, size);
     }
+
+
 
     @GetMapping("/{id}")
     public PostDto getPostById(@PathVariable int id) {
@@ -25,7 +31,7 @@ public class PostController {
     }
 
     @PostMapping
-    public PostDto createPost(@RequestBody PostDto postDto) {
+    public PostDto createPost(@Valid @RequestBody PostDto postDto) {
         return postService.createPost(postDto);
     }
 

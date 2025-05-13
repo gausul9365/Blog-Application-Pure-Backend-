@@ -1,16 +1,28 @@
 package com.khurram.blogapp.service.impl;
 
 import com.khurram.blogapp.entities.Post;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+
+
 import com.khurram.blogapp.exceptions.PostNotFoundException;
 import com.khurram.blogapp.payload.PostDto;
+import com.khurram.blogapp.payload.PostResponse;
 import com.khurram.blogapp.repositories.PostRepository;
 import com.khurram.blogapp.service.PostService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.stream.Collectors;
+
+
+
+
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -18,14 +30,28 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostRepository postRepository;
 
-    // 🔁 GET ALL POSTS - MAP ENTITY -> DTO
+    //  GET ALL POSTS - MAP ENTITY -> DTO
+  
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream().map(this::mapToDto).collect(Collectors.toList());
+    public PostResponse getAllPosts(int pageNumber, int pageSize) {
+        Pageable pageable = (Pageable) PageRequest.of(pageNumber, pageSize);
+        Page<Post> postPage = postRepository.findAll(pageable);
+        
+        List<Post> posts = postPage.getContent();
+        List<PostDto> content = posts.stream().map(this::mapToDto).toList();
+
+        PostResponse response = new PostResponse();
+        response.setContent(content);
+        response.setPageNumber(postPage.getNumber());
+        response.setPageSize(postPage.getSize());
+        response.setTotalElements(postPage.getTotalElements());
+        response.setTotalPages(postPage.getTotalPages());
+        response.setLastPage(postPage.isLast());
+
+        return response;
     }
 
-    // 🎯 GET POST BY ID
+    //  GET POST BY ID
     @Override
     public PostDto getPostById(int id) {
         Post post = postRepository.findById(id)
@@ -33,7 +59,7 @@ public class PostServiceImpl implements PostService {
         return mapToDto(post);
     }
 
-    // 🆕 CREATE POST
+    //  CREATE POST
     @Override
     public PostDto createPost(PostDto postDto) {
         Post post = mapToEntity(postDto); // convert DTO → Entity
@@ -41,7 +67,7 @@ public class PostServiceImpl implements PostService {
         return mapToDto(savedPost); // return Entity → DTO
     }
 
-    // ✏️ UPDATE POST
+    //  UPDATE POST
     @Override
     public PostDto updatePost(int id, PostDto postDto) {
         Post existingPost = postRepository.findById(id)
@@ -56,7 +82,7 @@ public class PostServiceImpl implements PostService {
         return mapToDto(updatedPost);
     }
 
-    // ❌ DELETE POST
+    // DELETE POST
     @Override
     public void deletePost(int id) {
         Post post = postRepository.findById(id)
@@ -64,18 +90,19 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
     }
 
-    // 🧠 MAP ENTITY → DTO
+    //  MAP ENTITY → DTO
     private PostDto mapToDto(Post post) {
         PostDto dto = new PostDto();
         dto.setId(post.getId());
         dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
         dto.setAuthor(post.getAuthor());
-        dto.setCreatedAt(post.getCreatedAt().toString()); // Optional format
+        dto.setCreatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(post.getCreatedAt()));
         return dto;
     }
 
-    // 🧠 MAP DTO → ENTITY
+
+    //  MAP DTO → ENTITY
     private Post mapToEntity(PostDto dto) {
         Post post = new Post();
         post.setId(dto.getId());
