@@ -1,6 +1,7 @@
 package com.khurram.blogapp.controllers;
 
 import com.khurram.blogapp.payload.PostDto;
+
 import com.khurram.blogapp.payload.PostResponse;
 
 import jakarta.validation.Valid;
@@ -20,12 +21,12 @@ public class PostController {
     public PostResponse getAllPosts(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "5", required = false) int size) {
-        return postService.getAllPosts(page, size);
+        return postService.getAllPostps(page, size);
     }
 
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")zzzzzzzzzzzzzzzzzzzzzzzzzzzz
     public PostDto getPostById(@PathVariable int id) {
         return postService.getPostById(id);
     }
